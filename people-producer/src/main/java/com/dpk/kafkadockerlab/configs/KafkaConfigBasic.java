@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.Map;
 
 @Configuration
-public class KafkaConfig {
+public class KafkaConfigBasic {
 
-    private static Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
+    private static Logger logger = LoggerFactory.getLogger(KafkaConfigBasic.class);
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -64,7 +64,7 @@ public class KafkaConfig {
     /**
      * Override retention period of an already existing Kafka topic
      */
-    @PostConstruct
+    @PostConstruct // Comment this out when running the application for the first time to create the topics
     public void changePeopleBasicTopicRetention() throws Exception {
         // Create a connection config for admin
         Map<String, Object> connectionConfigs = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -92,7 +92,7 @@ public class KafkaConfig {
                 // use admin to alter the config passing it a map of the alter config op
                 Map<ConfigResource, Collection<AlterConfigOp>> alterConfigs = Map.of(configResource, Collections.singletonList(alterOp));
                 admin.incrementalAlterConfigs(alterConfigs).all().get();
-                logger.info("Updated topic retention for " + topicName);
+                logger.info("Updated topic retention for {}", topicName);
             }
         }
     }
